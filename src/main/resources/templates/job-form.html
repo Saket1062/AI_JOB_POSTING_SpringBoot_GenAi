@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Job Posting - JobPortal</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 1000px;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+
+        .form-section {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .ai-generate-btn {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #fd79a8 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+            color: white;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--success-color) 0%, #00b894 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+            color: white;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid var(--secondary-color);
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .loading-spinner {
+            display: none;
+            color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border-color: #6c757d;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbar-custom {
+            background: var(--primary-color);
+            padding: 1rem 0;
+            margin-bottom: 0;
+        }
+
+        .navbar-custom .navbar-brand {
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .navbar-custom .nav-link {
+            color: white;
+            margin: 0 0.5rem;
+        }
+
+        .navbar-custom .nav-link:hover {
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-briefcase me-2"></i>JobPortal AI</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/jobs/list}"><i class="fas fa-list me-1"></i>All Jobs</a>
+            <a class="nav-link" th:href="@{/jobs/new}"><i class="fas fa-plus me-1"></i>New Job</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <h1><i class="fas fa-briefcase me-3"></i>Create New Job Posting</h1>
+            <p class="mb-0">Fill in the details below to create an attractive job posting</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <!-- Form with two actions: Save and Generate Description -->
+            <form id="jobPostingForm" th:object="${jobPosting}">
+
+                <!-- Basic Information Card -->
+                <div class="card card-custom">
+                    <div class="card-header card-header-custom">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="jobTitle">
+                                        <i class="fas fa-tag me-1"></i>Job Title *
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="jobTitle"
+                                           th:field="*{jobTitle}"
+                                           placeholder="e.g., Senior Java Developer"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="companyName">
+                                        <i class="fas fa-building me-1"></i>Company Name *
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="companyName"
+                                           th:field="*{companyName}"
+                                           placeholder="e.g., Tech Solutions Inc."
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="location">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Location *
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="location"
+                                           th:field="*{location}"
+                                           placeholder="e.g., Bangalore, India"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="openPositions">
+                                        <i class="fas fa-users me-1"></i>Open Positions *
+                                    </label>
+                                    <input type="number"
+                                           class="form-control"
+                                           id="openPositions"
+                                           th:field="*{openPositions}"
+                                           min="1"
+                                           placeholder="e.g., 3"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Experience & Salary Card -->
+                <div class="card card-custom">
+                    <div class="card-header card-header-custom">
+                        <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Experience & Compensation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="experienceRange">
+                                        <i class="fas fa-clock me-1"></i>Experience Range *
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="experienceRange"
+                                           th:field="*{experienceRange}"
+                                           placeholder="e.g., 2-4 years"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="salaryRange">
+                                        <i class="fas fa-money-bill-wave me-1"></i>Salary Range
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="salaryRange"
+                                           th:field="*{salaryRange}"
+                                           placeholder="e.g., 8-12 LPA">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Card -->
+                <div class="card card-custom">
+                    <div class="card-header card-header-custom">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Required Skills</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="mustHaveSkills">
+                                        <i class="fas fa-star me-1"></i>Must Have Skills *
+                                    </label>
+                                    <textarea class="form-control"
+                                              id="mustHaveSkills"
+                                              th:field="*{mustHaveSkills}"
+                                              rows="4"
+                                              placeholder="e.g., Java, Spring Boot, REST APIs, Microservices..."
+                                              required></textarea>
+                                    <small class="text-muted">Separate skills with commas</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="goodToHaveSkills">
+                                        <i class="fas fa-plus-circle me-1"></i>Good to Have Skills
+                                    </label>
+                                    <textarea class="form-control"
+                                              id="goodToHaveSkills"
+                                              th:field="*{goodToHaveSkills}"
+                                              rows="4"
+                                              placeholder="e.g., Docker, Kubernetes, AWS, React..."></textarea>
+                                    <small class="text-muted">Separate skills with commas</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Description Card -->
+                <div class="card card-custom">
+                    <div class="card-header card-header-custom">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Job Description</h5>
+                            <button type="button"
+                                    class="btn ai-generate-btn"
+                                    id="generateDescriptionBtn"
+                                    onclick="generateDescription()">
+                                <i class="fas fa-robot me-1"></i>
+                                <span id="generateBtnText">Generate with AI</span>
+                                <div class="loading-spinner" id="loadingSpinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label" for="jobDescription">
+                                <i class="fas fa-align-left me-1"></i>Job Description *
+                            </label>
+                            <textarea class="form-control"
+                                      id="jobDescription"
+                                      th:field="*{jobDescription}"
+                                      rows="8"
+                                      placeholder="Describe the job responsibilities, requirements, and benefits..."
+                                      required></textarea>
+                            <small class="text-muted">
+                                Click "Generate with AI" to auto-generate based on the information above, then edit as needed.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <a th:href="@{/jobs/list}" class="btn btn-secondary w-100 h-100">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to Job List
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="button" class="btn submit-btn" onclick="saveJob()">
+                            <i class="fas fa-save me-2"></i>
+                            Save Job Posting
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Helper: Get form field value by id
+    const getValue = id => document.getElementById(id).value.trim();
+
+    // Show/Hide loading spinner and button text
+    function setLoading(isLoading) {
+        const btn = document.getElementById('generateDescriptionBtn');
+        const btnText = document.getElementById('generateBtnText');
+        const spinner = document.getElementById('loadingSpinner');
+
+        btn.disabled = isLoading;
+        btnText.style.display = isLoading ? 'none' : 'inline';
+        spinner.style.display = isLoading ? 'inline-block' : 'none';
+    }
+
+
+    // Generate AI Description via AJAX
+    function generateDescription() {
+        const requiredFields = ['jobTitle', 'companyName', 'location', 'experienceRange', 'mustHaveSkills'];
+        const payload = {};
+
+        // Validate required fields
+        for (const id of requiredFields) {
+            const value = getValue(id);
+            if (!value) {
+                alert('Please fill in all required fields before generating job description.');
+                return;
+            }
+            payload[id] = value;
+        }
+
+        // Optional fields
+        payload['goodToHaveSkills'] = getValue('goodToHaveSkills');
+
+        setLoading(true);
+
+        fetch('/jobs/generate-description-ajax', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('jobDescription').value = data.description;
+            setLoading(false);
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Failed to generate AI description. Please try again.');
+            setLoading(false);
+        });
+    }
+
+    // Save Job with simple validation
+    function saveJob() {
+        let isValid = true;
+        document.querySelectorAll('[required]').forEach(field => {
+            if (!field.value.trim()) {
+                field.style.border = '2px solid #e74c3c';
+                isValid = false;
+            } else {
+                field.style.border = '';
+            }
+        });
+
+        if (!isValid) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        const form = document.getElementById('jobPostingForm');
+        form.action = '/jobs/save';
+        form.method = 'post';
+        form.submit();
+    }
+
+    // Real-time validation
+    document.querySelectorAll('[required]').forEach(field => {
+        field.addEventListener('input', () => {
+            field.style.border = field.value.trim() ? '' : field.style.border;
+        });
+    });
+</script>
+</body>
+</html>

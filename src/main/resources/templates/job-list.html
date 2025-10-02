@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>All Job Postings - JobPortal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        :root {
+          --primary-color: #2c3e50;
+          --secondary-color: #3498db;
+          --accent-color: #e74c3c;
+          --success-color: #27ae60;
+        }
+        body {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          min-height: 100vh;
+        }
+        .navbar-custom {
+          background: var(--primary-color);
+          padding: 1rem 0;
+        }
+        .navbar-custom .navbar-brand { color: white; font-weight: 700; font-size: 1.5rem; }
+        .navbar-custom .nav-link { color: white; margin: 0 0.5rem; }
+        .navbar-custom .nav-link:hover { color: var(--secondary-color); }
+        .main-container {
+          background: rgba(255,255,255,0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+          margin: 2rem auto;
+          padding: 2rem;
+        }
+        .job-card {
+          background: white;
+          border-radius: 15px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+          transition: transform 0.3s ease;
+        }
+        .job-card:hover { transform: translateY(-5px); }
+        .btn-primary { background: var(--secondary-color); border-color: var(--secondary-color); border-radius: 8px; }
+        .btn-primary:hover { background: #2980b9; border-color: #2980b9; }
+        .modal { z-index: 2000 !important; }
+        .modal-backdrop { z-index: 1500 !important; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-briefcase me-2"></i>JobPortal AI</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" th:href="@{/jobs/list}"><i class="fas fa-list me-1"></i>All Jobs</a>
+            <a class="nav-link" th:href="@{/jobs/new}"><i class="fas fa-plus me-1"></i>New Job</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="main-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-list me-2"></i>All Job Postings</h2>
+            <a th:href="@{/jobs/new}" class="btn btn-primary"><i class="fas fa-plus me-1"></i>Create New Job</a>
+        </div>
+
+        <div class="row" th:if="${jobs != null and !jobs.empty}">
+            <div class="col-12" th:each="job : ${jobs}">
+                <div class="job-card">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="text-primary" th:text="${job.jobTitle}">Job Title</h4>
+                            <p class="mb-1"><i class="fas fa-building me-2"></i><strong th:text="${job.companyName}">Company</strong></p>
+                            <p class="mb-1"><i class="fas fa-map-marker-alt me-2"></i><span th:text="${job.location}">Location</span></p>
+                            <p class="mb-1"><i class="fas fa-clock me-2"></i>Experience: <span th:text="${job.experienceRange}">Range</span></p>
+                            <p class="mb-1" th:if="${job.salaryRange}"><i class="fas fa-money-bill-wave me-2"></i>Salary: <span th:text="${job.salaryRange}">Salary</span></p>
+                            <p class="mb-1"><i class="fas fa-cogs me-2"></i><span th:text="${job.mustHaveSkills}">Skills</span></p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                <small class="text-muted">Open Positions:</small>
+                                <span class="badge bg-success fs-6" th:text="${job.openPositions}">3</span>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm me-2"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#jobModal' + ${job.id}">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-3" th:if="${job.jobDescription}">
+                        <h6>Description:</h6>
+                        <p class="text-muted small" th:utext="${#strings.abbreviate(job.jobDescription,200)}">Preview...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center py-5" th:if="${jobs == null or jobs.empty}">
+            <i class="fas fa-briefcase fa-4x text-muted mb-3"></i>
+            <h4>No Job Postings Found</h4>
+            <p class="text-muted">Create your first job posting to get started!</p>
+            <a th:href="@{/jobs/new}" class="btn btn-primary btn-lg"><i class="fas fa-plus me-2"></i>Create First Job</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modals at end of body -->
+<div th:each="job : ${jobs}">
+    <div class="modal fade"
+         th:id="'jobModal' + ${job.id}"
+         tabindex="-1"
+         th:aria-labelledby="'jobModalLabel' + ${job.id}"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"
+                        th:id="'jobModalLabel' + ${job.id}"
+                        th:text="${job.jobTitle}">Job Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Company:</strong> <span th:text="${job.companyName}"></span></p>
+                            <p><strong>Location:</strong> <span th:text="${job.location}"></span></p>
+                            <p><strong>Experience:</strong> <span th:text="${job.experienceRange}"></span></p>
+                            <p><strong>Open Positions:</strong> <span th:text="${job.openPositions}"></span></p>
+                            <p th:if="${job.salaryRange}"><strong>Salary:</strong> <span th:text="${job.salaryRange}"/></p>
+                        </div>
+                        <div class="col-md-6">
+                            <div th:if="${job.mustHaveSkills}">
+                                <strong>Must Have Skills:</strong>
+                                <p class="small" th:text="${job.mustHaveSkills}"></p>
+                            </div>
+                            <div th:if="${job.goodToHaveSkills}">
+                                <strong>Good to Have Skills:</strong>
+                                <p class="small" th:text="${job.goodToHaveSkills}"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${job.jobDescription}">
+                        <strong>Job Description:</strong>
+                        <div class="mt-2" style="white-space: pre-line;" th:utext="${job.jobDescription}"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
